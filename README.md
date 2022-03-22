@@ -4,9 +4,14 @@ Search tools to retreive term(s) from UKB HTML files to be downloaded in the loc
 
 ## Installation
 
+* from pypi
 ```
-pip install https://github.com/danielmsk/ukbsearch/dist/ukbsearch-0.0.1-py3-none-any.whl
 pip install ukbsearch
+```
+
+* from github
+```
+pip install https://github.com/danielmsk/ukbsearch/dist/ukbsearch-0.1.0-py3-none-any.whl
 ```
 
 ## Options

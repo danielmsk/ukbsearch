@@ -5,6 +5,7 @@ install_requires = [
     # 'prettytable'
     'rich',
     'pyreadr',
+    'prettytable',
     'pandas'
 ]
 
