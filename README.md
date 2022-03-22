@@ -52,6 +52,10 @@ optional arguments:
 
 ## Usage
 
+### Search result
+![](https://raw.githubusercontent.com/danielmsk/ukbsearch/main/docs/screenshot1.png?token=GHSAT0AAAAAABSGIZOM3KNUUTFMR4HLUQHMYRZRPCQ)
+
+
 ### Search for single term
 ```
 ukbsearch -s age
