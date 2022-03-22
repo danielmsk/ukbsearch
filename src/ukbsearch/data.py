@@ -26,7 +26,14 @@ class DATA:
             self.load_html(htmlfile)
 
         print("\tTotal_columns:", self.total_col)
-            
+    
+    def find_htmlfile_from_fid(self, fid):
+        rst = ""
+        for htmlfile in self.html_list:
+            if fid + '.html' in htmlfile:
+                rst = htmlfile
+                break
+        return rst
 
     def load_html(self, htmlfile):
         flag = False
@@ -89,44 +96,3 @@ class DATA:
                 rst_blocklist.append(block)
 
         return rst_blocklist
-
-
-'''
-        console = Console()
-        table = Table(show_header=True)
-        table.add_column("HTML", justify="left")
-        for k in range(len(COLNAMES)):
-            table.add_column(COLNAMES[k], justify=COL_JUSTIFY[k])
-        table.add_column("FileID", justify="left")
-        # table.add_column("Title")
-        # table.add_column("Production Budget", justify="right")
-        # table.add_column("Box Office", justify="right")
-        pattern = r'\b'+term+r'\b|\bsmoking\b'
-        # pattern = r'\bage\b'
-        # pattern = r'age'
-        print(term)
-        for block in self.blocklist:
-            fa = re.findall(pattern, block.description, flags=re.IGNORECASE)
-            if len(fa) > 0:
-            # if term in block.description:
-                # print(pattern, re.findall(pattern, block.description, flags=re.IGNORECASE))
-
-                # text = Text()
-                # text.append("Hello", style="bold magenta")
-                # text.append(" World!")
-
-                for row in block.get_listrows():
-                    if row[4] != "":
-                        desc = Text()
-                        arr_split = re.split(pattern, block.description, flags=re.IGNORECASE)
-                        arr_findall = re.findall(pattern, block.description, flags=re.IGNORECASE)
-                        for k in range(len(arr_split)):
-                            desc.append(arr_split[k])
-                            if k < len(arr_findall):
-                                desc.append(arr_findall[k], style="bold magenta")
-                    else:
-                        desc = ""
-                    table.add_row(block.fid, row[0], row[1], row[2], row[3], desc, block.htmlfile)
-                        # table.add_row(block.fid, row[0], row[1], row[2], row[3], row[4], block.htmlfile)
-        console.print(table)
-'''

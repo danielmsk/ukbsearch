@@ -16,26 +16,6 @@ def loading_config(opt):
             if len(k1) > 0:
                 opt[k1] = v1
     return opt
-
-
-def check_out_path(opt):
-    if ('out' in opt.keys() and opt['out'] == ''):
-        opt['out'] = './bamsnap_' + util.getNow2()
-    if 'out' in opt.keys() and opt['out'] != None:
-        util.check_dir(opt['out'])
-
-
-def check_logfile(opt):
-    if 'log' in opt.keys():
-        if opt['log'] == None:
-            if 'out' in opt.keys() and opt['out'] != None:
-                opt['log'] = opt['out'] + '.log'
-            else:
-                opt['log'] = "ukbsearch"+".log"
-
-    else:
-        opt['log'] = "qts.log"
-
     
 
 def print_option(opt):
@@ -89,8 +69,6 @@ def get_options():
         opt = loading_config(opt)
 
     opt['cmd'] = " ".join(sys.argv)
-    check_out_path(opt)
-    check_logfile(opt)
     
 
     return opt
@@ -99,16 +77,16 @@ def get_options():
 ### OPTION ####
 OPT = {
   "TITLE": "UKBSearch",
-  "VERSION": "0.0.1",
-  "VERSION_DATE": "2022-03-21",
+  "VERSION": "0.1.0",
+  "VERSION_DATE": "2022-03-22",
   "PROG": "ukbsearch",
   "options": [
     { "param_a": "s", "param": "searchterm", "default": [], "nargs": "*", "action": None, "choices": None, "type": None, "help": "search terms (ex: age gender)" },
-    { "param_a": "l", "param": "logic", "default": "or", "nargs": None, "action": None, "choices": ["or","and"], "type": None, "help": "logical operator (ex: or, and)" },
+    { "param_a": "l", "param": "logic", "default": "or", "nargs": None, "action": None, "choices": ["or","and"], "type": None, "help": "logical operator for multiple terms [or, and]" },
     { "param_a": "o", "param": "out", "default": None, "nargs": None, "action": None, "choices": None, "type": None, "help": "title of output file" },
-    { "param_a": "t", "param": "outtype", "default": "console", "nargs": None, "action": None, "choices": ["console","csv","tab","udi"], "type": None, "help": "output type" },
+    { "param_a": "t", "param": "outtype", "default": ["console"], "nargs": "*", "action": None, "choices": ["console","csv", "udi"], "type": None, "help": "output type [console, csv, udi]" },
     { "param_a": "p", "param": "path", "default": "./", "nargs": None, "action": None, "choices": None, "type": None, "help": "data file (.html, .Rdata) path (default: ./)" },
     { "param_a": "u", "param": "udilist", "default": [], "nargs": "*", "action": None, "choices": None, "type": None, "help": "UDI list (ex. ukb39003 3536-0.0 3536-1.0 3536-2.0"},
-    { "param_a": "d", "param": "savedata", "default": "", "nargs": None, "action": None, "choices": ["csv","rdata"], "type": None, "help": "save data from .Rdata" },
+    { "param_a": "d", "param": "savedata", "default": [], "nargs": "*", "action": None, "choices": ["csv", "rdata"], "type": None, "help": "save data from .Rdata [csv, rdata]" },
   ]
 }

@@ -1,5 +1,6 @@
 import os
 import re
+import csv
 
 
 def walk(dirPath, ext=""):
@@ -35,3 +36,19 @@ def convert_term2pattern(term):
         else:
             aterm += r'\b' + term + r'\b'
     return aterm
+
+def save_csv(out, data):
+    with open(out, 'w', encoding='UTF8', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerows(data)
+
+def check_ext(out, ext):
+    dext = ext
+    if dext[0] != '.':
+        dext = '.' + ext
+    if not out.endswith(ext):
+        out += ext 
+    return out
+
+def getpath(filename):
+    return os.path.split(os.path.abspath(filename))

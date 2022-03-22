@@ -3,7 +3,9 @@ from setuptools import setup, find_packages
 
 install_requires = [
     # 'prettytable'
-    'rich'
+    'rich',
+    'pyreadr',
+    'pandas'
 ]
 
 tests_require = [
@@ -12,13 +14,11 @@ tests_require = [
 ]
 
 extras_require = {
-    'docs': [
-        'Sphinx>=1.1'
-    ]
+    'docs': []
 }
 
 setup(name='ukbsearch',
-    version='0.0.1',
+    version='0.1.0',
     url='https://github.com/danielmsk/ukbsearch',
     license='MIT',
     author='Daniel Minseok Kwon',
@@ -43,10 +43,9 @@ setup(name='ukbsearch',
     install_requires=install_requires,
     setup_requires=['nose>=1.0'],
     test_suite='nose.collector',
-    # packages = ['.','templates'],
-    package_data={
-        'ukbsearch': ['templates/*', 'data/*'],
-    },
+    # package_data={
+    #     'ukbsearch': ['docs/*'],
+    # },
     entry_points={
         'console_scripts': [
             'ukbsearch=ukbsearch:cli',

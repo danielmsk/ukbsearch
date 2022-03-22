@@ -1,15 +1,18 @@
 from prettytable import PrettyTable
 from .conf import COLNAMES
-
+from . import util
 class BLOCK:
     rows = []
     size = 0
     htmlfile = ""
+    rdata_df = ""
     fid = ""
     description = ""
 
     def __init__(self, htmlfile):
         self.htmlfile = htmlfile
+        self.rdatafile = ""
+        self.rdata_df = {}
         self.fid = htmlfile.split('/')[-1].replace('.html', '').strip()
         self.rows = []
         self.size = 0
@@ -46,3 +49,11 @@ class BLOCK:
                     listrow.append('')
             listrows.append(listrow)
         return listrows
+
+    def get_listudi(self):
+        listudi = []
+        for row in self.rows:
+            listudi.append(row['UDI'])
+        return listudi
+
+    
