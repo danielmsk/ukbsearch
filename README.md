@@ -95,7 +95,7 @@ ukbsearch -s age -p /other/path/for/ukb/html/.
 ```
 
 
-### Save data from .RData
+### Save data (.csv and .rdata) from .RData
 ```
 ukbsearch -u ukb39003 3536-0.0 3536-1.0 3536-2.0 -d csv -o test3
 (=ukbsearch --udilist ukb39003 3536-0.0 3536-1.0 3536-2.0 --savedata csv --out test3)
