@@ -77,7 +77,7 @@ def get_options():
 ### OPTION ####
 OPT = {
   "TITLE": "UKBSearch",
-  "VERSION": "0.1.0",
+  "VERSION": "0.1.1",
   "VERSION_DATE": "2022-03-22",
   "PROG": "ukbsearch",
   "options": [
@@ -85,7 +85,7 @@ OPT = {
     { "param_a": "l", "param": "logic", "default": "or", "nargs": None, "action": None, "choices": ["or","and"], "type": None, "help": "logical operator for multiple terms [or, and]" },
     { "param_a": "o", "param": "out", "default": None, "nargs": None, "action": None, "choices": None, "type": None, "help": "title of output file" },
     { "param_a": "t", "param": "outtype", "default": ["console"], "nargs": "*", "action": None, "choices": ["console","csv", "udi"], "type": None, "help": "output type [console, csv, udi]" },
-    { "param_a": "p", "param": "path", "default": "./", "nargs": None, "action": None, "choices": None, "type": None, "help": "data file (.html, .Rdata) path (default: ./)" },
+    { "param_a": "p", "param": "path", "default": "/data2/UKbiobank/ukb_phenotype", "nargs": None, "action": None, "choices": None, "type": None, "help": "data file (.html, .Rdata) path (default: ./)" },
     { "param_a": "u", "param": "udilist", "default": [], "nargs": "*", "action": None, "choices": None, "type": None, "help": "UDI list (ex. ukb39003 3536-0.0 3536-1.0 3536-2.0"},
     { "param_a": "d", "param": "savedata", "default": [], "nargs": "*", "action": None, "choices": ["csv", "rdata"], "type": None, "help": "save data from .Rdata [csv, rdata]" },
   ]

@@ -11,7 +11,7 @@ pip install ukbsearch
 
 * from github
 ```
-pip install https://github.com/danielmsk/ukbsearch/dist/ukbsearch-0.1.0-py3-none-any.whl
+pip install https://github.com/danielmsk/ukbsearch/dist/ukbsearch-0.1.1-py3-none-any.whl
 ```
 
 ## Options
@@ -40,14 +40,14 @@ optional arguments:
                         -t udi
                         -t console udi
   
-  -p, --path            directory path for data files (.html, .Rdata) (default: ./)
+  -p, --path            directory path for data files (.html, .Rdata) (default: /data2/UKbiobank/ukb_phenotype)
                         -p /other/path/for/ukb/html/.
   
   -u, --udilist         FileID and UDI list for saving data from RData files
                         -u ukb39003 3536-0.0 3536-1.0 3536-2.0
   
   -d, --savedata        save data from .Rdata [csv, rdata]
-                        -d csv 
+                        -d csv
                         -d rdata
                         -d csv rdata
 ```
@@ -93,7 +93,7 @@ ukbsearch -s 'ag*' 'rep*' -l and -o test1 -t console udi csv
 ```
 
 ### Set a particular directory
-* The default path is './'.
+* The default path is '/data2/UKbiobank/ukb_phenotype'.
 
 ```
 ukbsearch -s age -p /other/path/for/ukb/html/.
