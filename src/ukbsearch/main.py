@@ -5,12 +5,13 @@ import pyreadr
 from . import util
 from .data import DATA
 from .block import BLOCK
+from .tcf import TABINDEX, TCF
 from .conf import COLNAMES, COL_JUSTIFY
 from rich.console import Console
 from rich.table import Table
 from rich.text import Text
 
-
+'''
 class RDATA():
     fid = ""
     htmlfile = ""
@@ -64,6 +65,8 @@ class RDATA():
     def save_selected_udi_as_rdata(self, outfile):
         selected_r_udilist = self.get_selected_r_udilist()
         pyreadr.write_rdata(outfile, self.df.loc[:,selected_r_udilist], df_name="data")
+'''
+
 
 class UKBSearch():
     opt = None
@@ -103,64 +106,51 @@ class UKBSearch():
             self.save_data(blocklist)
     
     def save_data(self, blocklist):
-        rdatamap = {}
+        tcfmap = {}
         for block in blocklist:
-            if not block.fid in rdatamap.keys(): 
-                rdatamap[block.fid] = RDATA(block.fid, block.htmlfile)
-            rdatamap[block.fid].add_udilist(block.get_listudi())
-        self.save_data_with_radtamap(rdatamap)
+            if not block.fid in tcfmap.keys(): 
+                tcfmap[block.fid] = TCF(block.fid, self.opt['path'], self.opt['log'])
+            tcfmap[block.fid].add_udilist(block.get_listudi())
+        self.save_data_with_tcfmap(tcfmap)
         
-    def save_data_with_radtamap(self, rdatamap):
-        for fid in rdatamap.keys():
-            rdata = rdatamap[fid]
-            rdata.find_rdatafile()
-            if rdata.rdatafile == "":
-                self.opt['log'].error("Cannot find .RData file for " + rdata.fid + " in " + rdata.path )
-            else:
-                self.opt['log'].info("LOADING RDATA.. " + rdata.rdatafile + ". It takes a few minutes..")
-                rdata.load_rdata()
+    def save_data_with_tcfmap(self, tcfmap):
+        for fid in tcfmap.keys():
+            tcf = tcfmap[fid]
+            if tcf.load_tcf():
 
                 if "csv" in self.opt['savedata']:
-                    outfile = rdata.get_outfilename(self.opt['out'], 'csv')
+                    outfile = tcf.get_outfilename(self.opt['out'], 'csv')
                     self.opt['log'].info("SAVING CSV.. " + outfile + "  It takes a few minutes..")
-                    rdata.save_selected_udi_as_csv(outfile)
+                    tcf.save_selected_udi_as_csv(outfile)
 
                 if "rdata" in self.opt['savedata']:
-                    outfile = rdata.get_outfilename(self.opt['out'], 'RData')
+                    outfile = tcf.get_outfilename(self.opt['out'], 'RData')
                     self.opt['log'].info("SAVING RDATA.. " + outfile + "  It takes a few minutes..")
-                    rdata.save_selected_udi_as_rdata(outfile)
+                    tcf.save_selected_udi_as_rdata(outfile)
 
-    def convert_userinput_udilist_to_rdatamap(self, userinput_udilist):
-        data = DATA()
-        data.load_html_list(self.opt['path'])
-        rdatamap =  {}
+    def convert_userinput_udilist_to_tcfmap(self, userinput_udilist):
+        tcfmap =  {}
         fid = ""
         for u1 in userinput_udilist:
             if u1[:3] == "ukb":
                 fid = u1
-                htmlfile = data.find_htmlfile_from_fid(fid)
-                rdatamap[fid] = RDATA(fid, htmlfile)
+                tcfmap[fid] = TCF(fid, self.opt['path'], self.opt['log'])
             else:
-                rdatamap[fid].add_udilist([u1])
-        return rdatamap
+                if u1[:2] == "f.":
+                    u1 = util.convert_rudi_to_udi(u1)
+                tcfmap[fid].add_udilist([u1])
+        return tcfmap
 
-    def count_udi_from_rdatamap(self, rdatamap):
+    def count_udi_from_tcfmap(self, tcfmap):
         cnt = 0
-        for fid in rdatamap.keys():
-            cnt += len(rdatamap[fid].udilist)
+        for fid in tcfmap.keys():
+            cnt += len(tcfmap[fid].udilist)
         return cnt
 
     def save_data_with_userinput_udilist(self):
-        rdatamap = self.convert_userinput_udilist_to_rdatamap(self.opt['udilist'])
-        self.opt['log'].info("SELECTED " + str(self.count_udi_from_rdatamap(rdatamap)) + " UDI(s) FROM " + str(len(rdatamap.keys())) + " FILES.")
-        self.save_data_with_radtamap(rdatamap)
-
-    def dispatch(self):
-        if len(self.opt['searchterm']) > 0:
-            self.search()
-
-        if len(self.opt['udilist']) > 0:
-            self.save_data_with_userinput_udilist()
+        tcfmap = self.convert_userinput_udilist_to_tcfmap(self.opt['udilist'])
+        self.opt['log'].info("SELECTED " + str(self.count_udi_from_tcfmap(tcfmap)) + " UDI(s) FROM " + str(len(tcfmap.keys())) + " FILES.")
+        self.save_data_with_tcfmap(tcfmap)
 
     def save_csv_block(self, blocklist):
         rst = []
@@ -221,3 +211,19 @@ class UKBSearch():
                     desc = ""
                 table.add_row(block.fid, row[0], row[1], row[2], row[3], desc, block.htmlfile)
         console.print(table)
+
+    def dispatch(self):
+        if len(self.opt['searchterm']) > 0:
+            self.search()
+
+        if len(self.opt['udilist']) > 0:
+            self.save_data_with_userinput_udilist()
+
+        if self.opt['index'] != "":
+            tindex = TABINDEX(self.opt['index'], self.opt['log'])
+            self.opt['log'].info('CALCULATING SIZE..')
+            tindex.cal_size()
+            self.opt['log'].info('START INDEXING..')
+            tindex.transpose()
+            tindex.index()
+            self.opt['log'].info('GENERATED INDEX FILES: ' + tindex.tcfgz)

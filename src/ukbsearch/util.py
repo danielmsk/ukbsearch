@@ -52,3 +52,58 @@ def check_ext(out, ext):
 
 def getpath(filename):
     return os.path.split(os.path.abspath(filename))
+
+def readhead(filename):
+    arr = []
+    for line in open(filename):
+        arr = line.split('\t')
+        arr[-1] = arr[-1].strip()
+        break
+    return arr
+
+def gzopen(fname):
+    if fname.endswith(".gz"):
+        import gzip
+        f1 = gzip.GzipFile(fname, "r")
+    else:
+        f1 = open(fname)
+    return f1
+
+def run_cmd(scmd, flag=False):
+    if flag:
+        print(scmd)
+    rst = os.popen(scmd)
+    rst_cont = rst.read()
+    return rst_cont
+
+def fileSave(path, cont, opt, encoding='utf-8', gzip_flag="n"):
+    if gzip_flag == "gz":
+        import gzip
+        if not "b" in opt:
+            opt += "b"
+        f = gzip.open(path, opt)
+        f.write(cont.encode())
+        f.close()
+    else:
+        f = open(path, opt, encoding=encoding)
+        f.write(cont)
+        f.close
+
+def is_exist(fpath):
+    return os.path.exists(fpath)
+
+
+def decodeb(bstr):
+    if type(bstr) == type(b'a'):
+        rst = bstr.decode('UTF-8')
+    else:
+        rst = bstr
+    return rst
+
+def convert_rudi_to_udi(rudi):
+    arr = rudi.replace('f.','').split('.')
+    udi = arr[0] + '-' + '.'.join(arr[1:])
+    return udi
+
+def convert_udi_to_rudi(udi):
+    return 'f.'+udi.replace('-','.')

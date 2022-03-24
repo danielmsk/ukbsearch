@@ -6,7 +6,8 @@ install_requires = [
     'rich',
     'pyreadr',
     'prettytable',
-    'pandas'
+    'pandas',
+    'pytabix'
 ]
 
 tests_require = [
@@ -19,7 +20,7 @@ extras_require = {
 }
 
 setup(name='ukbsearch',
-    version='0.1.1',
+    version='0.2.0',
     url='https://github.com/danielmsk/ukbsearch',
     license='MIT',
     author='Daniel Minseok Kwon',

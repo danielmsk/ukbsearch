@@ -77,8 +77,8 @@ def get_options():
 ### OPTION ####
 OPT = {
   "TITLE": "UKBSearch",
-  "VERSION": "0.1.1",
-  "VERSION_DATE": "2022-03-22",
+  "VERSION": "0.2.0",
+  "VERSION_DATE": "2022-03-24",
   "PROG": "ukbsearch",
   "options": [
     { "param_a": "s", "param": "searchterm", "default": [], "nargs": "*", "action": None, "choices": None, "type": None, "help": "search terms (ex: age gender)" },
@@ -88,5 +88,6 @@ OPT = {
     { "param_a": "p", "param": "path", "default": "/data2/UKbiobank/ukb_phenotype", "nargs": None, "action": None, "choices": None, "type": None, "help": "data file (.html, .Rdata) path (default: ./)" },
     { "param_a": "u", "param": "udilist", "default": [], "nargs": "*", "action": None, "choices": None, "type": None, "help": "UDI list (ex. ukb39003 3536-0.0 3536-1.0 3536-2.0"},
     { "param_a": "d", "param": "savedata", "default": [], "nargs": "*", "action": None, "choices": ["csv", "rdata"], "type": None, "help": "save data from .Rdata [csv, rdata]" },
+    { "param_a": "i", "param": "index", "default": "", "nargs": None, "action": None, "choices": None, "type": None, "help": "index tab file (ex. ukb39003.tab)" },
   ]
 }
