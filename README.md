@@ -14,7 +14,7 @@ pip install ukbsearch
 
 * from github
 ```
-pip install https://github.com/danielmsk/ukbsearch/raw/main/dist/ukbsearch-0.2.0-py3-none-any.whl
+pip install https://github.com/danielmsk/ukbsearch/raw/main/dist/ukbsearch-0.2.1-py3-none-any.whl
 ```
 
 ### Dependency
@@ -136,6 +136,9 @@ ukbsearch -s 'ag*' 'rep*' -l and -d rdata -o test3
 
 
 ## Version History
+* 0.2.1 (2022-03-25)
+	* add csvi (inversed form) option.
+	* debug unsaved values issue.
 * 0.2.0 (2022-03-24)
 	* implementated tab file indexing based on [tabix](http://www.htslib.org/doc/tabix.html).
 * 0.1.1 (2022-03-23)

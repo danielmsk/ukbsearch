@@ -2,7 +2,7 @@ pip uninstall -y ukbsearch
 rm -rf build
 rm -rf ./dist/*
 python3 setup.py sdist bdist_wheel
-pip install ./dist/ukbsearch-0.2.0-py3-none-any.whl
+pip install ./dist/ukbsearch-0.2.1-py3-none-any.whl
 # twine upload dist/*
 # ukbsearch -s age smoking
 # ukbsearch -s age smoking -l and

@@ -120,11 +120,18 @@ class UKBSearch():
 
                 if "csv" in self.opt['savedata']:
                     outfile = tcf.get_outfilename(self.opt['out'], 'csv')
+                    tcf.set_result_dataframe()
                     self.opt['log'].info("SAVING CSV.. " + outfile + "  It takes a few minutes..")
                     tcf.save_selected_udi_as_csv(outfile)
+                
+                if "csvi" in self.opt['savedata']:
+                    outfile = tcf.get_outfilename(self.opt['out'], 'csv', '_inv')
+                    self.opt['log'].info("SAVING CSV.. " + outfile + "  It takes a few minutes..")
+                    tcf.save_selected_udi_as_csvi(outfile)
 
                 if "rdata" in self.opt['savedata']:
                     outfile = tcf.get_outfilename(self.opt['out'], 'RData')
+                    tcf.set_result_dataframe()
                     self.opt['log'].info("SAVING RDATA.. " + outfile + "  It takes a few minutes..")
                     tcf.save_selected_udi_as_rdata(outfile)
 

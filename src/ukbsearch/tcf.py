@@ -12,13 +12,14 @@ class TABINDEX():
     def __init__(self, tabfile, log=""):
         self.tabfile = tabfile
         self.tcf = tabfile + '.tcf'
-        self.tcfgz = tabfile + '.tcf.gz'
-        self.tcfgzidx = tabfile + '.tcf.gz.idx'
+        self.tcf = "/Users/pcaso/work/ukbsearchdata/" + tabfile + '.tcf'
+        self.tcfgz = "/Users/pcaso/work/ukbsearchdata/" + tabfile + '.tcf.gz'
+        self.tcfgzidx = "/Users/pcaso/work/ukbsearchdata/" + tabfile + '.tcf.gz.idx'
         self.log = log
         self.colsize = 0
         self.rowsize = 0
         self.totalsize = 0
-        self.blocksize = 200
+        self.blocksize = 100
 
     def cal_size(self):
         i = 0
@@ -32,8 +33,9 @@ class TABINDEX():
         self.totalsize = self.colsize * self.rowsize
         self.log.info(str(self.colsize-1) + " COLUMNS, " + str(self.rowsize-1) + " ROWS")
         self.blocksize = int(5000000 / self.rowsize)
-        if self.blocksize < 10:
-            self.blocksize = 10
+        if self.blocksize < 100:
+            self.blocksize = 100
+        self.log.info("BLOCK SIZE:" + str(self.blocksize))
 
     def transpose(self):
         f = open(self.tcf, 'w')
@@ -83,11 +85,11 @@ class TABINDEX():
             self.log.info('INDEXING.... ' + str(round(100.0*(processed_block*total_line)/self.totalsize,1)) + "%")
 
         f.close()
-
         util.fileSave(self.tcfgzidx, udiidxcont, 'w')
 
 
     def index(self):
+        self.log.info('BGZIPING AND TABIX INDEXING.... ')
         cmd = "bgzip -f "+self.tcf+" && tabix -f -p vcf "+self.tcf+".gz"
         util.run_cmd(cmd)
 
@@ -136,8 +138,8 @@ class TCF():
             flag = True
         return flag
 
-    def get_outfilename(self, out, ext):
-        outfile = out + '_' + self.fid + '.' + ext
+    def get_outfilename(self, out, ext, subtype = ""):
+        outfile = out + '_' + self.fid + subtype + '.' + ext
         return outfile
 
     def convert_udi(self, udi):
@@ -148,7 +150,7 @@ class TCF():
             cudi = arr[0]
         return cudi
 
-    def get_result_dataframe(self):
+    def set_result_dataframe(self):
         d = {}
         for udi in self.udilist:
             self.log.info("APPENDING " + udi + " data")
@@ -158,17 +160,26 @@ class TCF():
                 arr = rec[7].split(';')
                 d[arr[0]] = arr[1:]
                 # d[self.convert_udi(arr[0])] = arr[1:]
-        df = pd.DataFrame(data=d)
-        return df
+        self.rst_df = pd.DataFrame(data=d)
+
+    def save_selected_udi_as_csvi(self, outfile):
+        f = open(outfile, 'w')
+        for udi in self.udilist:
+            self.log.info("APPENDING " + udi + " data")
+            rudi = util.convert_udi_to_rudi(udi)
+            recs = self.tb.querys("1:" + self.udimap[rudi] +"-"+ self.udimap[rudi])
+            for rec in recs:
+                f.write(rec[7].replace(';', ',') + '\n')
+        f.close()
 
     def save_selected_udi_as_csv(self, outfile):
         if self.rst_df is None:
-            self.rst_df = self.get_result_dataframe()
+            self.set_result_dataframe()
         self.rst_df.to_csv(outfile, index=False, quotechar="'")
 
     def save_selected_udi_as_rdata(self, outfile):
         if self.rst_df is None:
-            self.rst_df = self.get_result_dataframe()
+            self.set_result_dataframe()
         pyreadr.write_rdata(outfile, self.rst_df, df_name="data")
 
 

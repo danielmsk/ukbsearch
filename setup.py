@@ -20,7 +20,7 @@ extras_require = {
 }
 
 setup(name='ukbsearch',
-    version='0.2.0',
+    version='0.2.1',
     url='https://github.com/danielmsk/ukbsearch',
     license='MIT',
     author='Daniel Minseok Kwon',
