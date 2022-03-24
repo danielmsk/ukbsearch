@@ -137,8 +137,8 @@ ukbsearch -s 'ag*' 'rep*' -l and -d rdata -o test3
 
 ## Version History
 * 0.2.0 (2022-03-24)
- * implementated tab file indexing based on [tabix](http://www.htslib.org/doc/tabix.html).
+	* implementated tab file indexing based on [tabix](http://www.htslib.org/doc/tabix.html).
 * 0.1.1 (2022-03-23)
- * changed default path to `/data2/UKbiobank/ukb_phenotype`
+	* changed default path to `/data2/UKbiobank/ukb_phenotype`
 * 0.1.0 (2022-03-21)
- * first released.
+	* first released.
