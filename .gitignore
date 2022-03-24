@@ -7,7 +7,7 @@ __pycache__/
 *.egg
 build/*
 build/lib/bamsnap/*
-dist/
+# dist/
 _build/
 tests/*.log
 tests/out/*.log
