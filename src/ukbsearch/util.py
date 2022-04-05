@@ -107,3 +107,13 @@ def convert_rudi_to_udi(rudi):
 
 def convert_udi_to_rudi(udi):
     return 'f.'+udi.replace('-','.')
+
+class DommyLog:
+    def __init__(self):
+        pass
+
+    def info(self, msg):
+        print(msg)
+    
+    def error(self, msg):
+        print(msg)

@@ -1,72 +1,14 @@
 import os
 import time
 import re
-import pyreadr
 from . import util
 from .data import DATA
 from .block import BLOCK
-from .tcf import TABINDEX, TCF
+from .tcf import TABINDEX, TCF, TCFMAP
 from .conf import COLNAMES, COL_JUSTIFY
 from rich.console import Console
 from rich.table import Table
 from rich.text import Text
-
-'''
-class RDATA():
-    fid = ""
-    htmlfile = ""
-    rdatafile = ""
-    path = ""
-    udilist = []
-    df = {}
-
-    def __init__(self, fid, htmlfile):
-        self.fid = fid
-        self.htmlfile = htmlfile
-        self.path = util.getpath(self.htmlfile)[0]
-        self.rdatafile = ""
-        self.df = {}
-        self.udilist = []
-    
-    def add_udilist(self, udilist):
-        self.udilist.extend(udilist)
-
-    def find_rdatafile(self):
-        for fname in util.walk(self.path):
-            if fname.endswith('.RData') or fname.endswith('.Rdata') or fname.endswith('.rdata'):
-                if os.path.abspath(self.htmlfile)[:-5] in fname:
-                    self.rdatafile = fname
-
-    def load_rdata(self):
-        if self.rdatafile == "":
-            self.find_rdatafile()
-        result = pyreadr.read_r(self.rdatafile, use_objects=["data"])
-        self.df = result['data']
-
-    def convert_rcolumn_list(self, column_list):
-        rst = []
-        for cname in column_list:
-            rst.append('f.' + cname.replace('-', '.'))
-        return rst
-
-    def get_outfilename(self, out, ext):
-        outfile = out + '_' + self.fid + '.' + ext
-        return outfile
-
-    def get_selected_r_udilist(self):
-        selected_r_udilist = ["f.eid"]
-        selected_r_udilist.extend(self.convert_rcolumn_list(self.udilist))
-        return selected_r_udilist
-
-    def save_selected_udi_as_csv(self, outfile):
-        selected_r_udilist = self.get_selected_r_udilist()
-        self.df.loc[:,selected_r_udilist].to_csv(outfile, index=False)
-
-    def save_selected_udi_as_rdata(self, outfile):
-        selected_r_udilist = self.get_selected_r_udilist()
-        pyreadr.write_rdata(outfile, self.df.loc[:,selected_r_udilist], df_name="data")
-'''
-
 
 class UKBSearch():
     opt = None
@@ -106,15 +48,25 @@ class UKBSearch():
             self.save_data(blocklist)
     
     def save_data(self, blocklist):
-        tcfmap = {}
+        tcfmap = TCFMAP(self.opt['log'])
         for block in blocklist:
             if not block.fid in tcfmap.keys(): 
-                tcfmap[block.fid] = TCF(block.fid, self.opt['path'], self.opt['log'])
-            tcfmap[block.fid].add_udilist(block.get_listudi())
-        self.save_data_with_tcfmap(tcfmap)
+                tcfmap.add_tcf(block.fid, TCF(block.fid, self.opt['path'], self.opt['log']))
+            tcfmap.tcfs[block.fid].add_udilist(block.get_listudi())
+        tcfmap.save_data(self.opt['out'], self.opt['savedata'])
         
     def save_data_with_tcfmap(self, tcfmap):
+        for outtype in self.opt['savedata']:
+            outfile = tcfmap.get_outfilename(self.opt['out'], outtype)
+            self.opt['log'].info("SAVING " + outtype + ", " + outfile + "  It takes a few minutes..")
+            tcfmap.save_selected_udi(outfile, outtype)
+
+        '''
+        ##
+        ## If you want to save files separately...
+        ##
         for fid in tcfmap.keys():
+            print("===>>>", fid)
             tcf = tcfmap[fid]
             if tcf.load_tcf():
 
@@ -134,30 +86,15 @@ class UKBSearch():
                     tcf.set_result_dataframe()
                     self.opt['log'].info("SAVING RDATA.. " + outfile + "  It takes a few minutes..")
                     tcf.save_selected_udi_as_rdata(outfile)
+        '''
+        
 
-    def convert_userinput_udilist_to_tcfmap(self, userinput_udilist):
-        tcfmap =  {}
-        fid = ""
-        for u1 in userinput_udilist:
-            if u1[:3] == "ukb":
-                fid = u1
-                tcfmap[fid] = TCF(fid, self.opt['path'], self.opt['log'])
-            else:
-                if u1[:2] == "f.":
-                    u1 = util.convert_rudi_to_udi(u1)
-                tcfmap[fid].add_udilist([u1])
-        return tcfmap
-
-    def count_udi_from_tcfmap(self, tcfmap):
-        cnt = 0
-        for fid in tcfmap.keys():
-            cnt += len(tcfmap[fid].udilist)
-        return cnt
 
     def save_data_with_userinput_udilist(self):
-        tcfmap = self.convert_userinput_udilist_to_tcfmap(self.opt['udilist'])
-        self.opt['log'].info("SELECTED " + str(self.count_udi_from_tcfmap(tcfmap)) + " UDI(s) FROM " + str(len(tcfmap.keys())) + " FILES.")
-        self.save_data_with_tcfmap(tcfmap)
+        tcfmap = TCFMAP(self.opt['log'])
+        tcfmap.set_userinput_udilist(self.opt['udilist'], self.opt['path'], self.opt['log'])
+        self.opt['log'].info("SELECTED " + str(tcfmap.count_udi()) + " UDI(s) FROM " + str(len(tcfmap.tcfs.keys())) + " FILES.")
+        tcfmap.save_data(self.opt['out'], self.opt['savedata'])
 
     def save_csv_block(self, blocklist):
         rst = []

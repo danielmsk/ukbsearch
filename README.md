@@ -14,7 +14,7 @@ pip install ukbsearch
 
 * from github
 ```
-pip install https://github.com/danielmsk/ukbsearch/raw/main/dist/ukbsearch-0.2.1-py3-none-any.whl
+pip install https://github.com/danielmsk/ukbsearch/raw/main/dist/ukbsearch-0.2.2-py3-none-any.whl
 ```
 
 ### Dependency
@@ -136,6 +136,9 @@ ukbsearch -s 'ag*' 'rep*' -l and -d rdata -o test3
 
 
 ## Version History
+* 0.2.2 (2022-04-05)
+	* change saving type for a single file
+	* remove csvi (inversed form) option.
 * 0.2.1 (2022-03-25)
 	* add csvi (inversed form) option.
 	* debug unsaved values issue.

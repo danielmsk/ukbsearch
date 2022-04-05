@@ -3,8 +3,10 @@ import math
 import os
 import tabix
 import pandas as pd
+import numpy as np
 import pyreadr
 import time
+from .util import DommyLog
 
 
 class TABINDEX():
@@ -94,6 +96,83 @@ class TABINDEX():
         util.run_cmd(cmd)
 
 
+class TCFMAP():
+    tcfs = {}
+    log = DommyLog
+
+    def __init__(self, log = DommyLog):
+        self.tcfs = {}
+        self.log = log
+
+    def add_tcf(self, fid, tcf):
+        self.tcfs[fid] = tcf
+
+    def get_outfilename(self, out, ext, subtype = ""):
+        if subtype == "":
+            outfile = out + '.' + ext
+        else:
+            outfile = out + '_' + subtype + '.' + ext
+        return outfile
+
+    # def save_selected_udi_csvi(self, outfile):
+    #     f = open(outfile, 'w')
+    #     for fid in self.tcfs.keys():
+    #         tcf = self.tcfs[fid]
+    #         if tcf.load_tcf():
+    #             for udi in tcf.udilist:
+    #                 tcf.log.info("APPENDING " + udi + " data")
+    #                 rudi = util.convert_udi_to_rudi(udi)
+    #                 recs = tcf.tb.querys("1:" + tcf.udimap[rudi] +"-"+ tcf.udimap[rudi])
+    #                 for rec in recs:
+    #                     f.write(rec[7].replace(';', ',') + '\n')
+    #     f.close()
+    
+    
+    def set_userinput_udilist(self, userinput_udilist, path="", log=""):
+        fid = ""
+        for u1 in userinput_udilist:
+            if u1[:3] == "ukb":
+                fid = u1
+                self.tcfs[fid] = TCF(fid, path, log)
+            else:
+                if u1[:2] == "f.":
+                    u1 = util.convert_rudi_to_udi(u1)
+                self.tcfs[fid].add_udilist([u1])
+
+    def count_udi(self):
+        cnt = 0
+        for fid in self.tcfs.keys():
+            cnt += len(self.tcfs[fid].udilist) - 1
+        return cnt
+
+    def get_merged_dataframe(self):
+        merged_df = pd.DataFrame(data={'f.eid':[]})
+        for fid in self.tcfs.keys():
+            tcf = self.tcfs[fid]
+            if tcf.load_tcf():
+                if tcf.rst_df is None:
+                    tcf.set_result_dataframe()
+                    merged_df = pd.merge(merged_df, tcf.rst_df, how='outer',on='f.eid')
+        return merged_df.replace('NA', np.nan)
+
+    def save_data(self, out, outtypes = ['csv']):
+        if 'csv' in outtypes or 'rdata' in outtypes:
+            merged_df = self.get_merged_dataframe()
+
+        for outtype in outtypes:
+            outfile = self.get_outfilename(out, outtype)
+            self.log.info("SAVING " + outtype + ", " + outfile + "  It takes a few minutes..")
+
+            if outtype == "csv":
+                merged_df.to_csv(outfile, index=False, quotechar="'", na_rep='NA')
+            elif outtype == "rdata":
+                pyreadr.write_rdata(outfile, merged_df, df_name="data")
+            # elif outtype == "csvi":
+            #     self.save_selected_udi_csvi(outfile)
+
+
+        
+
 class TCF():
     fid = ""
     tcfgz = ""
@@ -104,6 +183,7 @@ class TCF():
     tb = ""
     rst_df = None
     log = ""
+    is_loaded = False
 
     def __init__(self, fid, path, log=""):
         self.fid = fid
@@ -114,6 +194,7 @@ class TCF():
         self.udilist = ['eid']
         self.udimap = {}
         self.rst_df = None
+        self.rst_dict = None
         self.log = log
     
     def add_udilist(self, udilist):
@@ -136,6 +217,7 @@ class TCF():
                 arr = line.strip().split('\t')
                 self.udimap[arr[0]] = arr[1] ## keep position only
             flag = True
+        self.is_loaded = flag
         return flag
 
     def get_outfilename(self, out, ext, subtype = ""):
@@ -150,7 +232,7 @@ class TCF():
             cudi = arr[0]
         return cudi
 
-    def set_result_dataframe(self):
+    def set_result_dict(self):
         d = {}
         for udi in self.udilist:
             self.log.info("APPENDING " + udi + " data")
@@ -160,7 +242,13 @@ class TCF():
                 arr = rec[7].split(';')
                 d[arr[0]] = arr[1:]
                 # d[self.convert_udi(arr[0])] = arr[1:]
-        self.rst_df = pd.DataFrame(data=d)
+        self.rst_dict = d
+        
+
+    def set_result_dataframe(self):
+        if self.rst_dict is None:
+            self.set_result_dict()
+        self.rst_df = pd.DataFrame(data=self.rst_dict)
 
     def save_selected_udi_as_csvi(self, outfile):
         f = open(outfile, 'w')
